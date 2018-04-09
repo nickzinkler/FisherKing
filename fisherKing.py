@@ -68,7 +68,7 @@ def handle(msg):
             spawn_fish(msg)
 
         elif msg['text'] == "База данных" and msg['from']['username'] == 'Williander':
-            bot.sendDocument(chat_id, 'fish.sqlite')
+            bot.sendDocument(chat_id, open('fish.sqlite'))
 
         #choose
         elif re.match("Бот,", msg['text'], re.I) and re.search (' или ', msg['text'], re.I) and re.search ('\?', msg['text'], re.I) :
@@ -182,6 +182,8 @@ def handle(msg):
                     cur2.execute('INSERT INTO Orders (orders) VALUES (?)', (text,))
                     bot.sendMessage(chat_id, "Запрещаю " + text + ".")
                     conn2.commit()
+                else:
+                    bot.sendMessage(msg['chat']['id'], "У тебя нет рыбы для этого.")
             else:
                 bot.sendMessage(chat_id, "Такой запрет уже в силе.")
 
@@ -210,6 +212,8 @@ def handle(msg):
                     else:
                         cur2.execute('DELETE FROM Orders WHERE orders = ?', (text,))
                         bot.sendMessage(chat_id, "Разрешаю " + text + ".")
+                else:
+                    bot.sendMessage(msg['chat']['id'], "У тебя нет рыбы для этого.")
             else:
                 bot.sendMessage(chat_id, "Такого запрета нет.")
 
