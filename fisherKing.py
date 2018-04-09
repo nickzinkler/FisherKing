@@ -67,6 +67,9 @@ def handle(msg):
         elif msg['text'] == "Debug" and msg['from']['username'] == 'Williander':
             spawn_fish(msg)
 
+        elif msg['text'] == "Дебуг" and msg['from']['username'] == 'Williander':
+            spawn_fish(msg)
+
         #choose
         elif re.match("Бот,", msg['text'], re.I) and re.search (' или ', msg['text'], re.I) and re.search ('\?', msg['text'], re.I) :
             str1 = re.findall(', (.+) или', msg['text'], re.I)[0]
