@@ -67,8 +67,8 @@ def handle(msg):
         elif msg['text'] == "Debug" and msg['from']['username'] == 'Williander':
             spawn_fish(msg)
 
-        elif msg['text'] == "Дебуг" and msg['from']['username'] == 'Williander':
-            spawn_fish(msg)
+        elif msg['text'] == "База данных" and msg['from']['username'] == 'Williander':
+            bot.sendDocument(chat_id, 'fish.sqlite')
 
         #choose
         elif re.match("Бот,", msg['text'], re.I) and re.search (' или ', msg['text'], re.I) and re.search ('\?', msg['text'], re.I) :
