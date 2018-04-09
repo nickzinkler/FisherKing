@@ -1,1 +1,1 @@
-web: python fisherKing.py
+worker: python fisherKing.py
