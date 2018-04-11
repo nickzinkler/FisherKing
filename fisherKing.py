@@ -45,8 +45,12 @@ def handle(msg):
 
     update_users(msg)
 
+    id = msg['message_id']
+
+    print(id)
+
     if msg['from']['username'] == 'Talosan':
-        bot.deleteMessage(chat_id, msg['message_id'])
+        bot.deleteMessage(chat_id, id)
 
     elif content_type == 'text' and not 'forward_from' in msg:
 
