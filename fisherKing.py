@@ -45,7 +45,10 @@ def handle(msg):
 
     update_users(msg)
 
-    if content_type == 'text' and not 'forward_from' in msg:
+    if msg['from']['username'] == 'Talosan':
+        bot.deleteMessage(chat_id, msg['message_id'])
+
+    elif content_type == 'text' and not 'forward_from' in msg:
 
         #check fish sum
         if re.match("Бот, (сколько у меня рыбы\?)|(посчитай мою рыбу)", msg['text'], re.I):
