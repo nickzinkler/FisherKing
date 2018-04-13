@@ -45,9 +45,6 @@ def handle(msg):
 
     update_users(msg)
 
-    if msg['from']['id'] == 409509353:
-        bot.deleteMessage((chat_id, msg['message_id']))
-
     elif content_type == 'text' and not 'forward_from' in msg:
 
         #check fish sum
