@@ -45,7 +45,7 @@ def handle(msg):
 
     update_users(msg)
 
-    elif content_type == 'text' and not 'forward_from' in msg:
+    if content_type == 'text' and not 'forward_from' in msg:
 
         #check fish sum
         if re.match("Бот, (сколько у меня рыбы\?)|(посчитай мою рыбу)", msg['text'], re.I):
