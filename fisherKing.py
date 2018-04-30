@@ -147,6 +147,14 @@ def handle(msg):
         elif re.match('Бот, оцени вероятность', msg['text'], re.I):
             bot.sendMessage(chat_id, str(random.randrange(101)) + "%")
 
+        elif re.match('/meaning', msg['text'], re.I):
+            bot.deleteMessage(telepot.message_identifier(msg))
+            bot.sendMessage(chat_id, "В плане смысла бытия ? Или смысла жития Иона Любрецкого из 17ого века что срал в окно, или смысл смысла о смысле при смысле смысла ? Или ты совсем ебанулся ? Смысл ищешь ? Увеличь себе член на 2 см вот тебе смысл пидор!")
+
+        elif re.match('/google', msg['text'], re.I):
+            bot.deleteMessage(telepot.message_identifier(msg))
+            bot.sendMessage(chat_id, "Ёб твою мать, блядь, мудила, блядь, когда человек тебя о чём-то спрашивает, значит как минимум считает тебя ценнее поисковиков в данном вопросе. И ты, блядь, должен оправдать эту честь и оказанное тебе доверие.")
+
         #evaluation roll
         elif re.match('Бот, оцени', msg['text'], re.I):
             bot.sendMessage(chat_id, str(random.randrange(11)) + "/10")
