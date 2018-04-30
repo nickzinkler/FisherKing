@@ -22,7 +22,7 @@ cur2 = conn2.cursor()
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishTable
-            (id INTEGER PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, fishCount INTEGER)''')
+            (id SERIAl PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, fishCount INTEGER)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
