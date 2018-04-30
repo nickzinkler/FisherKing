@@ -294,7 +294,7 @@ def update_users(msg):
     try:
         username = cur2.fetchone()[0]
         if (msg['from']['username'] != username):
-            cur2.execute('UPDATE FishTable SET username = %s WHERE userid = %s', (username, msg['from']['id']))
+            cur2.execute('UPDATE FishTable SET username = (%s) WHERE userid = (%s)', (username, msg['from']['id']))
     except:
         cur2.execute('INSERT INTO FishTable (username, userid, fishCount) VALUES (%s, %s, %s)', (msg['from']['username'], msg['from']['id'], 0))
         conn2.commit()
