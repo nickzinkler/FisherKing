@@ -317,7 +317,7 @@ def spawn_fish(msg):
            [InlineKeyboardButton(text='Словить!', callback_data= "fish_" + str(msg['message_id']))],
        ])
     newmsg = bot.sendMessage(msg['chat']['id'], "Рыба прыгает из воды, лови скорее!", reply_markup = keyboard)
-    cur2.execute('INSERT INTO FishOccurence (origmsg, chatid, msgid, status) VALUES ((%s), (%s), (%s), (%s))', (msg['message_id'], newmsg['chat']['id'], newmsg['message_id'], "Free"))
+    cur2.execute('INSERT INTO FishOccurence (origmsg, chatid, msgid, status) VALUES (%s, %s, %s, %s)', (msg['message_id'], newmsg['chat']['id'], newmsg['message_id'], "Free"))
     conn2.commit()
 
 def username_to_id(username):
