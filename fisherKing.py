@@ -333,7 +333,7 @@ def add_fish(msg, amount):
 def add_fish_by_id(userid, amount):
     cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s)', (userid, ))
     count = cur2.fetchone()[0]
-    cur2.execute('UPDATE FishTable SET fishCount = ? WHERE userid = (%s)', (count + amount, userid))
+    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s)', (count + amount, userid))
     conn2.commit()
 
 def on_callback_query(msg):
@@ -344,7 +344,7 @@ def on_callback_query(msg):
         cur2.execute('SELECT status, chatid, msgid FROM FishOccurence WHERE origmsg = (%s)', (msgnum, ))
         msg_data = cur2.fetchone()
         if re.match("Free", msg_data[0]):
-            cur2.execute('UPDATE FishOccurence SET status = ? WHERE origmsg = (%s)', ("Caught", msgnum))
+            cur2.execute('UPDATE FishOccurence SET status = (%s) WHERE origmsg = (%s)', ("Caught", msgnum))
             conn2.commit()
             bot.answerCallbackQuery(query_id, text='Рыбка твоя!')
             add_fish_by_id(from_id, 1)
