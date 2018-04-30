@@ -290,13 +290,13 @@ def handle(msg):
         pprint(msg)
 
 def update_users(msg):
-    cur2.execute('SELECT username FROM FishTable WHERE userid = ?', (msg['from']['id'], ))
+    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (msg['from']['id'], ))
     try:
         username = cur2.fetchone()[0]
         if (msg['from']['username'] != username):
-            cur2.execute('UPDATE FishTable SET username = ? WHERE userid = ?', (username, msg['from']['id']))
+            cur2.execute('UPDATE FishTable SET username = %s WHERE userid = %s', (username, msg['from']['id']))
     except:
-        cur2.execute('INSERT INTO FishTable (username, userid, fishCount) VALUES (?, ?, ?)', (msg['from']['username'], msg['from']['id'], 0))
+        cur2.execute('INSERT INTO FishTable (username, userid, fishCount) VALUES (%s, %s, %s)', (msg['from']['username'], msg['from']['id'], 0))
         conn2.commit()
 
 def check_balance(msg):
