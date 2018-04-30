@@ -22,7 +22,7 @@ cur2 = conn2.cursor()
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishTable
-            (id INTEGER PRIMARY KEY, username TEXT, userid TEXT UNIQUE, fishCount INTEGER)''')
+            (id INTEGER PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, fishCount INTEGER)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
@@ -290,7 +290,7 @@ def handle(msg):
         pprint(msg)
 
 def update_users(msg):
-    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (str(msg['from']['id']), ))
+    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (msg['from']['id'], ))
     try:
         username = cur2.fetchone()[0]
         if (msg['from']['username'] != username):
