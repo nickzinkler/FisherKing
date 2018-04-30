@@ -290,7 +290,7 @@ def handle(msg):
         pprint(msg)
 
 def update_users(msg):
-    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (msg['from']['id'], ))
+    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (string(msg['from']['id']), ))
     try:
         username = cur2.fetchone()[0]
         if (msg['from']['username'] != username):
