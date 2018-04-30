@@ -7,13 +7,17 @@ import threading
 import re
 import random
 import sqlite3
+import os
+import psycopg2
 from telepot.loop import MessageLoop
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ForceReply
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
 from pprint import pprint
 
-conn2 = sqlite3.connect('fish.sqlite', check_same_thread = False)
+DATABASE_URL = os.environ['DATABASE_URL']
+
+conn2 = psycopg2.connect(DATABASE_URL, sslmode = 'require')
 cur2 = conn2.cursor()
 
 cur2.execute('''
@@ -260,7 +264,7 @@ def handle(msg):
             bot.sendMessage(chat_id, "Сила: " + str(random.randrange(10) + 1) + "\nЛовкость: " + str(random.randrange(10) + 1) + "\nИнтеллект: " + str(random.randrange(10) + 1) + "\nХаризма: " + str(random.randrange(10) + 1) + "\nТелосложение: " + str(random.randrange(10) + 1) + "\nОмерзительность: " + str(random.randrange(10) + 1))
 
         #tellbot
-        elif msg['chat']['id'] != -1001246713784 and re.match('Бот, скажи', msg['text'], re.I) and len(re.findall('\"', msg['text'])) == 2 :
+        elif msg['chat']['id'] != -1001246713784 and re.match('/say ', msg['text'], re.I) and len(re.findall('\"', msg['text'])) == 2 :
             message = re.findall(r'\"(.+)\"', msg['text'])
             if len(re.findall("\*", msg['text'])) > 0 :
                 bot.sendMessage(chat_id, "Пожалуйста, не используйте звёздочки.", "Markdown")
