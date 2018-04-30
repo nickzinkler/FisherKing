@@ -26,7 +26,7 @@ cur2.execute('''
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
-            (id SERIAL PRIMARY KEY, origmsg INTEGER, chatid INTEGER, msgid INTEGER, status TEXT)''')
+            (id SERIAL PRIMARY KEY, origmsg INTEGER, chatid BIGINT, msgid INTEGER, status TEXT)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS Orders
