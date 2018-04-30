@@ -26,7 +26,7 @@ cur2.execute('''
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
-            (id SERIAL PRIMARY KEY, origmsg INTEGER, chatid BIGINT, msgid INTEGER, status TEXT)''')
+            (id SERIAL PRIMARY KEY, origmsg INTEGER, chatid INTEGER, msgid INTEGER, status TEXT)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS Orders
@@ -317,6 +317,9 @@ def spawn_fish(msg):
            [InlineKeyboardButton(text='Словить!', callback_data= "fish_" + str(msg['message_id']))],
        ])
     newmsg = bot.sendMessage(msg['chat']['id'], "Рыба прыгает из воды, лови скорее!", reply_markup = keyboard)
+    print (msg['message_id'])
+    print (newmsg['chat']['id'])
+    print (newmsg['message_id'])
     cur2.execute('INSERT INTO FishOccurence (origmsg, chatid, msgid, status) VALUES (%s, %s, %s, %s)', (msg['message_id'], newmsg['chat']['id'], newmsg['message_id'], "Free"))
     conn2.commit()
 
