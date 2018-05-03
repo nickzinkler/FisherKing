@@ -22,7 +22,7 @@ cur2 = conn2.cursor()
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishTable
-            (id SERIAl PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, chatid BIGINT, fishCount INTEGER)''')
+            (id SERIAl PRIMARY KEY, username TEXT, userid INTEGER, chatid BIGINT, fishCount INTEGER)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
@@ -30,7 +30,7 @@ cur2.execute('''
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS Orders
-            (id SERIAL PRIMARY KEY, orders TEXT UNIQUE, chatid BIGINT)''')
+            (id SERIAL PRIMARY KEY, orders TEXT, chatid BIGINT)''')
 
 bot = telepot.Bot('457399966:AAH-MN0EwmzmJLC7o18QmMIDa8wIxY9kW-Q')
 bot.getMe()
