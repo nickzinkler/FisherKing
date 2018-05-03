@@ -111,7 +111,7 @@ def handle(msg):
                     if rnd == 6:
                         bot.sendMessage(chat_id, "Пролетающая мимо чайка грациозно выхватывает рыбу у вас из рук в момент передачи.")
                     else:
-                        add_fish_by_id(username_to_id(user), msg, 1)
+                        add_fish_by_id(username_to_id(user), chat_id, 1)
                         bot.sendMessage(chat_id, "Рыба успешно передана.")
 
         elif re.match("Бот, гимн", msg['text'], re.I):
