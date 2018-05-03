@@ -223,11 +223,11 @@ def handle(msg):
 
         #disallowed
         elif re.search('Бот, ', msg['text'], re.I) and re.search("запрет(ы|ов|ам)", msg['text'], re.I):
-            cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id']))
+            cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id'], ))
             if (cur2.fetchone() is None):
                 bot.sendMessage(chat_id, "На данный момент на территории Острова не действует никаких запретов.")
             else:
-                cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id']))
+                cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id'], ))
                 tempStr = "На территории Острова строго запретили:\n\n"
                 for row in cur2:
                     stri = str(row[0])
