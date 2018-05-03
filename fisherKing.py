@@ -85,7 +85,7 @@ def handle(msg):
             cur2.execute('SELECT fishCount FROM FishTable')
             for row in cur2:
                 count = count + row[0]
-            cur2.execute('SELECT username, fishCount FROM FishTable WHERE fishcount > 0 and chaid = %s ORDER bY fishCount DESC', (msg['chat']['id'], ))
+            cur2.execute('SELECT username, fishCount FROM FishTable WHERE fishcount > 0 and chatid = %s ORDER bY fishCount DESC', (msg['chat']['id'], ))
             tempStr = "На данный момент рыбными активами обладают:\n\n"
             for row in cur2:
                 tempStr = tempStr + str(row[0]) + ":\t" + str(int(100 * round(row[1] / count, 2))) + "% акций\n"
