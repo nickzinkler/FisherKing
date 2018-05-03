@@ -183,7 +183,7 @@ def handle(msg):
                 if (check_balance(msg) > 0):
                     spend_fish(msg, 1)
                     bot.sendMessage(msg['chat']['id'], "Рыба бьёт тебя хвостом и вырывается на волю.")
-                    cur2.execute('INSERT INTO Orders (orders) VALUES (%s, %s)', (text, msg['chat']['id']))
+                    cur2.execute('INSERT INTO Orders (orders, chatid) VALUES (%s, %s)', (text, msg['chat']['id']))
                     bot.sendMessage(chat_id, "Запрещаю " + text + ".")
                     conn2.commit()
                 else:
