@@ -82,14 +82,17 @@ def handle(msg):
         #fish market
         elif re.match("Бот,", msg['text'], re.I) and re.search (' рыбн(ой|ая|ую) бирж(и|а|е|у)', msg['text'], re.I) :
             count = 0
-            cur2.execute('SELECT fishCount FROM FishTable')
+            cur2.execute('SELECT fishCount FROM FishTable WHERE chatid = (%s)', (msg['chat']['id'], ))
             for row in cur2:
                 count = count + row[0]
             cur2.execute('SELECT username, fishCount FROM FishTable WHERE fishcount > 0 and chatid = %s ORDER bY fishCount DESC', (msg['chat']['id'], ))
-            tempStr = "На данный момент рыбными активами обладают:\n\n"
-            for row in cur2:
-                tempStr = tempStr + str(row[0]) + ":\t" + str(int(100 * round(row[1] / count, 2))) + "% акций\n"
-            bot.sendMessage(chat_id, tempStr)
+            if count > 0:
+                tempStr = "На данный момент рыбными активами обладают:\n\n"
+                for row in cur2:
+                    tempStr = tempStr + str(row[0]) + ":\t" + str(int(100 * round(row[1] / count, 2))) + "% акций\n"
+                bot.sendMessage(chat_id, tempStr)
+            else:
+                bot.sendMessage(chat_id, "На данный момент население Острова обходится без рыбы.")
 
         #transfer fish
         elif re.match("Бот,", msg['text'], re.I) and re.search("переда(й|ть) рыбу", msg['text'], re.I):
