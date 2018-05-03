@@ -22,7 +22,7 @@ cur2 = conn2.cursor()
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishTable
-            (id SERIAl PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, fishCount INTEGER)''')
+            (id SERIAl PRIMARY KEY, username TEXT, userid INTEGER UNIQUE, chatid BIGINT, fishCount INTEGER)''')
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS FishOccurence
@@ -30,15 +30,7 @@ cur2.execute('''
 
 cur2.execute('''
             CREATE TABLE IF NOT EXISTS Orders
-            (id SERIAL PRIMARY KEY, orders TEXT UNIQUE)''')
-
-cur2.execute('''
-            CREATE TABLE IF NOT EXISTS Votings
-            (id SERIAL PRIMARY KEY, target TEXT UNIQUE, count INTEGER, voters TEXT, message_id INTEGER, chat_id INTEGER)''')
-
-cur2.execute('''
-            CREATE TABLE IF NOT EXISTS Data
-            (id SERIAL PRIMARY KEY, name TEXT UNIQUE, num INTEGER UNIQUE)''')
+            (id SERIAL PRIMARY KEY, orders TEXT UNIQUE, chatid BIGINT)''')
 
 bot = telepot.Bot('457399966:AAH-MN0EwmzmJLC7o18QmMIDa8wIxY9kW-Q')
 bot.getMe()
@@ -93,7 +85,7 @@ def handle(msg):
             cur2.execute('SELECT fishCount FROM FishTable')
             for row in cur2:
                 count = count + row[0]
-            cur2.execute('SELECT username, fishCount FROM FishTable WHERE fishcount > 0 ORDER bY fishCount DESC')
+            cur2.execute('SELECT username, fishCount FROM FishTable WHERE fishcount > 0 and chaid = %s ORDER bY fishCount DESC', (msg['chat']['id'], ))
             tempStr = "На данный момент рыбными активами обладают:\n\n"
             for row in cur2:
                 tempStr = tempStr + str(row[0]) + ":\t" + str(int(100 * round(row[1] / count, 2))) + "% акций\n"
@@ -119,7 +111,7 @@ def handle(msg):
                     if rnd == 6:
                         bot.sendMessage(chat_id, "Пролетающая мимо чайка грациозно выхватывает рыбу у вас из рук в момент передачи.")
                     else:
-                        add_fish_by_id(username_to_id(user), 1)
+                        add_fish_by_id(username_to_id(user), msg, 1)
                         bot.sendMessage(chat_id, "Рыба успешно передана.")
 
         elif re.match("Бот, гимн", msg['text'], re.I):
@@ -191,7 +183,7 @@ def handle(msg):
                 if (check_balance(msg) > 0):
                     spend_fish(msg, 1)
                     bot.sendMessage(msg['chat']['id'], "Рыба бьёт тебя хвостом и вырывается на волю.")
-                    cur2.execute('INSERT INTO Orders (orders) VALUES (%s)', (text,))
+                    cur2.execute('INSERT INTO Orders (orders) VALUES (%s, %s)', (text, msg['chat']['id']))
                     bot.sendMessage(chat_id, "Запрещаю " + text + ".")
                     conn2.commit()
                 else:
@@ -211,7 +203,7 @@ def handle(msg):
                 if str(row[0].lower()) == text.lower():
                     result = True
                     tempstr = row[0]
-            cur2.execute('SELECT orders FROM Orders WHERE orders = (%s)', (text,))
+            cur2.execute('SELECT orders FROM Orders WHERE orders = (%s) and chatid = (%s)', (text, msg['chat']['id']))
             if (re.search('запрети|разреши', text, re.I)):
                 bot.sendMessage(chat_id, "Петрович, заебал.")
             elif (cur2.fetchone() is not None or result):
@@ -219,10 +211,10 @@ def handle(msg):
                     spend_fish(msg, 1)
                     bot.sendMessage(msg['chat']['id'], "Рыба бьёт тебя хвостом и вырывается на волю.")
                     if (result):
-                        cur2.execute('DELETE FROM Orders WHERE orders = (%s)', (tempstr,))
+                        cur2.execute('DELETE FROM Orders WHERE orders = (%s) and chatid = (%s)', (tempstr, msg['chat']['id']))
                         bot.sendMessage(chat_id, "Разрешаю " + tempstr + ".")
                     else:
-                        cur2.execute('DELETE FROM Orders WHERE orders = (%s)', (text,))
+                        cur2.execute('DELETE FROM Orders WHERE orders = (%s) and chatid = (%s)', (text, msg['chat']['id']))
                         bot.sendMessage(chat_id, "Разрешаю " + text + ".")
                 else:
                     bot.sendMessage(msg['chat']['id'], "У тебя нет рыбы для этого.")
@@ -231,11 +223,11 @@ def handle(msg):
 
         #disallowed
         elif re.search('Бот, ', msg['text'], re.I) and re.search("запрет(ы|ов|ам)", msg['text'], re.I):
-            cur2.execute('SELECT orders FROM Orders')
+            cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id']))
             if (cur2.fetchone() is None):
                 bot.sendMessage(chat_id, "На данный момент на территории Острова не действует никаких запретов.")
             else:
-                cur2.execute('SELECT orders FROM Orders')
+                cur2.execute('SELECT orders FROM Orders WHERE chatid = %s', (msg['chat']['id']))
                 tempStr = "На территории Острова строго запретили:\n\n"
                 for row in cur2:
                     stri = str(row[0])
@@ -284,9 +276,9 @@ def handle(msg):
             randstring = random.choice(["CAADAgADFgAD1L_qBCuBbCv6w1PhAg", "CAADAgADGAAD1L_qBNsikKLAu_2eAg", "CAADAgADJgAD1L_qBI-iJL-j9LA5Ag", "CAADAgADLAAD1L_qBAKXEdvEO1_cAg"])
             bot.sendSticker(chat_id, randstring)
 
-    if msg['chat']['id'] == -1001246713784:
+    if msg['chat']['type'] != "private":
         countTemp = 0
-        cur2.execute('SELECT fishCount FROM FishTable')
+        cur2.execute('SELECT fishCount FROM FishTable WHERE chatid = %s', (msg['chat']['id'], ))
         for row in cur2:
             countTemp = countTemp + row[0]
         rand = random.randint(0, 10 + 10 * countTemp)
@@ -298,24 +290,24 @@ def handle(msg):
         pprint(msg)
 
 def update_users(msg):
-    cur2.execute('SELECT username FROM FishTable WHERE userid = %s', (msg['from']['id'], ))
+    cur2.execute('SELECT username FROM FishTable WHERE userid = (%s) AND chatid = (%s)', (msg['from']['id'], msg['chat']['id']))
     try:
         username = cur2.fetchone()[0]
         if (msg['from']['username'] != username):
-            cur2.execute('UPDATE FishTable SET username = (%s) WHERE userid = (%s)', (username, msg['from']['id']))
+            cur2.execute('UPDATE FishTable SET username = (%s) WHERE userid = (%s) AND chatid = (%s) ', (username, msg['from']['id'], msg['chat']['id']))
     except:
-        cur2.execute('INSERT INTO FishTable (username, userid, fishCount) VALUES (%s, %s, %s)', (msg['from']['username'], msg['from']['id'], 0))
+        cur2.execute('INSERT INTO FishTable (username, userid, chatid, fishCount) VALUES (%s, %s, %s, %s)', (msg['from']['username'], msg['from']['id'], msg['chat']['id'], 0))
         conn2.commit()
 
 def check_balance(msg):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s)', (msg['from']['id'], ))
+    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) AND chatid = (%s)', (msg['from']['id'], msg['chat']['id']))
     return cur2.fetchone()[0]
 
 def spend_fish(msg, amount):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s)', (msg['from']['id'], ))
+    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) AND chatid = (%s)', (msg['from']['id'], msg['chat']['id']))
     count = cur2.fetchone()[0]
     if (count - amount >= 0) :
-        cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s)', (count - amount, msg['from']['id']))
+        cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) AND chatid = (%s)', (count - amount, msg['from']['id'], msg['chat']['id']))
     else :
         bot.sendMessage(msg['chat']['id'], "Ошибочная операция.")
     conn2.commit()
@@ -333,15 +325,15 @@ def username_to_id(username):
     return cur2.fetchone()[0]
 
 def add_fish(msg, amount):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s)', (msg['from']['id'], ))
+    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (msg['from']['id'], msg['chat']['id']))
     count = cur2.fetchone()[0]
-    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s)', (count + amount, msg['from']['id']))
+    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, msg['from']['id']), msg['chat']['id'])
     conn2.commit()
 
-def add_fish_by_id(userid, amount):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s)', (userid, ))
+def add_fish_by_id(userid, msg, amount):
+    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (userid, msg['chat']['id']))
     count = cur2.fetchone()[0]
-    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s)', (count + amount, userid))
+    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, userid, msg['chat']['id']))
     conn2.commit()
 
 def on_callback_query(msg):
@@ -355,7 +347,7 @@ def on_callback_query(msg):
             cur2.execute('UPDATE FishOccurence SET status = (%s) WHERE origmsg = (%s)', ("Caught", msgnum))
             conn2.commit()
             bot.answerCallbackQuery(query_id, text='Рыбка твоя!')
-            add_fish_by_id(from_id, 1)
+            add_fish_by_id(from_id, msg, 1)
             bot.editMessageText((msg_data[1], msg_data[2]), "Рыба поймана.")
 
 MessageLoop(bot, {'chat' : handle, 'callback_query' : on_callback_query} ).run_as_thread()
