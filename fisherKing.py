@@ -330,10 +330,10 @@ def add_fish(msg, amount):
     cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, msg['from']['id']), msg['chat']['id'])
     conn2.commit()
 
-def add_fish_by_id(userid, msg, amount):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (userid, msg['chat']['id']))
+def add_fish_by_id(userid, chatid, amount):
+    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (userid, chatid))
     count = cur2.fetchone()[0]
-    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, userid, msg['chat']['id']))
+    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, userid, chatid))
     conn2.commit()
 
 def on_callback_query(msg):
@@ -347,7 +347,7 @@ def on_callback_query(msg):
             cur2.execute('UPDATE FishOccurence SET status = (%s) WHERE origmsg = (%s)', ("Caught", msgnum))
             conn2.commit()
             bot.answerCallbackQuery(query_id, text='Рыбка твоя!')
-            add_fish_by_id(from_id, msg, 1)
+            add_fish_by_id(from_id, msg_data[1], 1)
             bot.editMessageText((msg_data[1], msg_data[2]), "Рыба поймана.")
 
 MessageLoop(bot, {'chat' : handle, 'callback_query' : on_callback_query} ).run_as_thread()
