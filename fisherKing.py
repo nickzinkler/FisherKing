@@ -63,9 +63,6 @@ def handle(msg):
         elif msg['text'] == "Debug" and msg['from']['username'] == 'Williander':
             spawn_fish(msg)
 
-        elif msg['text'] == "База данных" and msg['from']['username'] == 'Williander':
-            bot.sendDocument(chat_id, open('fish.sqlite', 'rb'))
-
         #choose
         elif re.match("Бот,", msg['text'], re.I) and re.search (' или ', msg['text'], re.I) and re.search ('\?', msg['text'], re.I) :
             str1 = re.findall(', (.+) или', msg['text'], re.I)[0]
@@ -126,6 +123,9 @@ def handle(msg):
 
         elif re.match("/roll1d20", msg['text'], re.I):
             bot.sendMessage(chat_id, "1d20: " + str(random.randrange(20) + 1))
+
+        elif re.match("/gang", msg['text'], re.I):
+            bot.sendPhoto(chat_id, 'AgADAgAD8agxG-UVYUuX8uyjVgWJWQgjrQ4ABPlmuUZgz-DOYUoBAAEC')
 
         elif re.match("/nroll", msg['text'], re.I):
             threshold = str(random.randrange(20) + 1);
@@ -334,10 +334,21 @@ def add_fish(msg, amount):
     conn2.commit()
 
 def add_fish_by_id(userid, chatid, amount):
-    cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (userid, chatid))
-    count = cur2.fetchone()[0]
-    cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, userid, chatid))
-    conn2.commit()
+    if (check_user_exists(userid, chatid)):
+        cur2.execute('SELECT fishCount FROM FishTable WHERE userid = (%s) and chatid = (%s)', (userid, chatid))
+        count = cur2.fetchone()[0]
+        cur2.execute('UPDATE FishTable SET fishCount = (%s) WHERE userid = (%s) and chatid = (%s)', (count + amount, userid, chatid))
+        conn2.commit()
+    else:
+        bot.sendMessage(msg['chat']['id'], "Ошибочная операция. Рыбовладелец не существует.")
+
+def check_user_exists(userid, chatid):
+    cur2.execute('SELECT * FROM FishTable WHERE userid = (%s) AND chatid = (%s)', (userid, chatid))
+    try:
+        val = cur2.fetchone()[0]
+        return True
+    except:
+        return False
 
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
