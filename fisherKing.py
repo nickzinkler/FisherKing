@@ -124,7 +124,7 @@ def handle(msg):
         elif re.match("/roll1d20", msg['text'], re.I):
             bot.sendMessage(chat_id, "1d20: " + str(random.randrange(20) + 1))
 
-        elif re.match("/gang", msg['text'], re.I):
+        elif re.match("/bandits", msg['text'], re.I):
             bot.sendPhoto(chat_id, 'AgADAgAD8agxG-UVYUuX8uyjVgWJWQgjrQ4ABPlmuUZgz-DOYUoBAAEC')
 
         elif re.match("/nroll", msg['text'], re.I):
